@@ -16,14 +16,13 @@ from aqt.utils import mungeQA, openLink
 config = mw.addonManager.getConfig(__name__)
 
 
-def sortFieldOrderCids(did):
+def sortedCids(did):
     dids = [did]
     for name, id in mw.col.decks.children(did):
         dids.append(id)
     return mw.col.db.list(
         """
-select c.id from cards c, notes n where did in %s
-and c.nid = n.id order by n.sfld"""
+select c.id from cards c where did in %s order by c.id"""
         % ids2str(dids)
     )
 
@@ -32,7 +31,7 @@ def onPrint():
     path = os.path.join(
         QStandardPaths.writableLocation(QStandardPaths.DesktopLocation), "print.html"
     )
-    ids = sortFieldOrderCids(mw.col.decks.selected())
+    ids = sortedCids(mw.col.decks.selected())
 
     def esc(s):
         # strip off the repeated question in answer if exists
